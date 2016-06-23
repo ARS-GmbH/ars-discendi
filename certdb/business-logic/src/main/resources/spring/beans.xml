@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:neo4j="http://www.springframework.org/schema/data/neo4j"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/data/neo4j
+    http://www.springframework.org/schema/data/neo4j/spring-neo4j.xsd
+    http://www.springframework.org/schema/task  
+    http://www.springframework.org/schema/task/spring-task-3.2.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd">
+    
+    <context:annotation-config />
+    <neo4j:repositories base-package="de.ars.skilldb.repository" />
+
+    <neo4j:config base-package="de.ars.skilldb.domain" graphDatabaseService="graphDatabase" />
+    <bean id="graphDatabase"
+        class="org.springframework.data.neo4j.rest.SpringRestGraphDatabase">
+        <constructor-arg value="http://localhost:7474/db/data/" index="0" />
+    </bean>
+    
+    <bean id="certificationInteractor" class="de.ars.skilldb.interactor.impl.CertificationInteractorImpl" />
+    <bean id="brandInteractor" class="de.ars.skilldb.interactor.impl.BrandInteractorImpl" />
+    <bean id="productGroupInteractor" class="de.ars.skilldb.interactor.impl.ProductGroupInteractorImpl" />
+    <bean id="examInteractor" class="de.ars.skilldb.interactor.impl.ExamInteractorImpl" />
+    <bean id="userInteractor" class="de.ars.skilldb.interactor.impl.UserInteractorImpl" />
+    <bean id="accomplishedCertificationInteractor" class="de.ars.skilldb.interactor.impl.AccomplishedCertificationInteractorImpl" />
+    <bean id="accomplishedExamInteractor" class="de.ars.skilldb.interactor.impl.AccomplishedExamInteractorImpl" />
+    <bean id="plannedExamInteractor" class="de.ars.skilldb.interactor.impl.PlannedExamInteractorImpl" />
+    <bean id="pathInteractor" class="de.ars.skilldb.interactor.impl.PathInteractorImpl" />
+    <bean id="plannedCertificationInteractor" class="de.ars.skilldb.interactor.impl.PlannedCertificationInteractorImpl" />
+    
+    <bean id="certSlurper" class="de.ars.skilldb.input.CertSlurper">
+        <constructor-arg value="http://www-03.ibm.com/certify/partner/pub/zz/mem_skillsreq_printout.shtml" />
+        <!-- <constructor-arg value="/eligible-skills-demo-update.html"/> -->
+        <constructor-arg value="reference" />
+    </bean>
+    
+    <bean id="certWebEntryMapper" class="de.ars.skilldb.input.CertWebEntryMapper">
+        <constructor-arg value="MMM dd yyyy" />
+    </bean>
+    
+    <bean id="brandContainer" class="de.ars.skilldb.input.BrandContainer" />
+    <bean id="productGroupContainer" class="de.ars.skilldb.input.ProductGroupContainer" />
+    <bean id="certificationContainer" class="de.ars.skilldb.input.CertificationContainer" />
+    
+    <bean id="fileSystemBlobPersister" class="de.ars.skilldb.output.FileSystemBlobPersister">
+        <constructor-arg>
+            <bean class="java.io.File">
+                <constructor-arg value="blobs/demo" />
+            </bean>
+        </constructor-arg>
+    </bean>
+    
+    <import resource="classpath:/spring/quartz-config.xml"/>
+    
+</beans>

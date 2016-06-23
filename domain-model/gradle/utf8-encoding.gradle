@@ -1,0 +1,16 @@
+/*
+ * Setzt das Source-Encoding des gesamten Projekts (javadoc + compile) auf UTF-8.
+ */
+javadoc.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+/*
+ * Setzt das Source-Encoding in Eclipse auf UTF-8.
+ */
+eclipseJdt << {
+    File f = file('.settings/org.eclipse.core.resources.prefs')
+    f.write('eclipse.preferences.version=1\n')
+    f.append('encoding/<project>=UTF-8')
+}

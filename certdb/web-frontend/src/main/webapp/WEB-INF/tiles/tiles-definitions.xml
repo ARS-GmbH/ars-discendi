@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+  
+    <definition name="defaultTemplate" template="/WEB-INF/template/default/template.jsp">
+        <put-attribute name="header" value="/WEB-INF/template/default/header.jsp" />
+        <put-attribute name="menu" value="/WEB-INF/template/default/menu.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/template/default/footer.jsp" />
+    </definition>
+    
+    <definition name="bootstrapTemplate" template="/WEB-INF/template/bootstrap/template.jsp">
+        <put-attribute name="flash-messages" value="/WEB-INF/template/bootstrap/flash-messages.jsp" />
+        <put-attribute name="header" value="/WEB-INF/template/bootstrap/header.jsp" />
+        <put-attribute name="sidebar" value="/WEB-INF/template/bootstrap/sidebar.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/template/bootstrap/footer.jsp" />
+    </definition>
+  
+</tiles-definitions>

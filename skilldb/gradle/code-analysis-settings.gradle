@@ -1,0 +1,28 @@
+pmd {
+    toolVersion  = '5.0.5'
+}
+
+tasks.withType(Pmd) {
+    ruleSetFiles = files("${rootProject.projectDir}/config/pmd/rules-hafner.xml")
+    ignoreFailures = true
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+tasks.withType(Checkstyle) {
+    ignoreFailures = true
+    configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
+    configProperties = ['config_loc':"${rootProject.projectDir}/config/checkstyle"]
+}
+
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+    ignoreFailures = true
+    excludeFilter = file("${rootProject.projectDir}/config/findbugs/findbugs-exclusion-filter.xml")
+}

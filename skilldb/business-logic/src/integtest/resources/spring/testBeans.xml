@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:neo4j="http://www.springframework.org/schema/data/neo4j"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/data/neo4j
+    http://www.springframework.org/schema/data/neo4j/spring-neo4j.xsd">
+    
+    <neo4j:config base-package="de.ars.skilldb.domain"  storeDirectory="build/db/test"/>
+    <neo4j:repositories base-package="de.ars.skilldb.repository" />
+    
+    <bean id="knowledgeInteractor" class="de.ars.skilldb.interactor.impl.KnowledgeInteractorImpl" />
+    <bean id="knowledgeCategoryInteractor" class="de.ars.skilldb.interactor.impl.KnowledgeCategoryInteractorImpl" />
+    <bean id="skillInteractor" class="de.ars.skilldb.interactor.impl.SkillInteractorImpl" />
+    <bean id="skillLevelInteractor" class="de.ars.skilldb.interactor.impl.SkillLevelInteractorImpl" />
+    <bean id="userInteractor" class="de.ars.skilldb.interactor.impl.UserInteractorImpl" />
+
+</beans>

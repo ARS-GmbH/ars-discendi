@@ -1,0 +1,69 @@
+<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans  
+                        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+                        
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value=""/>
+        <property name="port" value="465"/>
+        <property name="username" value="max.mustermann@example.com"/>
+        <property name="password" value=""/>
+        <property name="protocol" value="smtps"/>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="certificationEmailNotifier" class="de.ars.skilldb.schedule.CertificationEmailNotifier">
+        <constructor-arg ref="mailSender" />
+        <property name="emailTemplate" value="certdb-mail.txt" />
+    </bean>
+    
+    <bean id="certificationUpdateRunner" class="de.ars.skilldb.schedule.CertificationUpdateRunner">
+        <constructor-arg ref="certificationEmailNotifier" />
+    </bean>
+    
+    <bean id="certificationReminder" class="de.ars.skilldb.schedule.CertificationReminder">
+        <constructor-arg ref="certificationEmailNotifier" />
+    </bean>
+
+    <bean id="certUpdate" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="certificationUpdateRunner" />
+        <property name="targetMethod" value="run" />
+    </bean>
+    
+    <bean id="certReminder" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="certificationReminder" />
+        <property name="targetMethod" value="run" />
+    </bean>
+
+    <bean id="cronTriggerUpdate" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="certUpdate" />
+        <!-- Wöchentlich jeden Freitag um 5 Uhr früh. -->
+        <property name="cronExpression" value="0 0 05 1/1 * ? *" />
+    </bean>
+    
+    <bean id="cronTriggerReminder" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="certReminder" />
+        <!-- Wöchentlich jeden Freitag um 5 Uhr früh. -->
+        <property name="cronExpression" value="0 0 05 1/1 * ? *" />
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="jobDetails">
+            <list>
+                <ref bean="certUpdate" />
+                <ref bean="certReminder" />
+            </list>
+        </property>
+        <property name="triggers">
+            <list>
+                <ref bean="cronTriggerUpdate" />
+                <ref bean="cronTriggerReminder" />
+            </list>
+        </property>
+    </bean>
+
+</beans>  

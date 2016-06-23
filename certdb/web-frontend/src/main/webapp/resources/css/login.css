@@ -1,0 +1,55 @@
+html,body {
+    height: 100%;
+}
+
+#wrap {
+    min-height: 100%;
+}
+
+#main {
+    overflow: auto;
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+#footer {
+    position: relative;
+    margin-top: -30px;
+    height: 30px;
+    clear: both;
+    color: #ffffff;
+}
+
+/*Opera Fix*/
+body:before {
+    content: "";
+    height: 100%;
+    float: left;
+    width: 0;
+    margin-top: -32767px;
+    /
+}
+
+.footer-background {
+    background-color: #4F4F4F;
+}
+
+.arslogo {
+    max-width: 400px;
+    margin-top: 40px;
+    min-height: 170px;
+}
+
+object,svg,img {
+    display: block;
+    width: 70%;
+    height: auto;
+    margin: auto;
+}
+
+@media(max-width: 768px) {
+    .arslogo {
+        visibility: hidden;
+        min-height: 30px;
+    }
+}

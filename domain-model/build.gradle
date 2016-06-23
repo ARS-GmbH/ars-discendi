@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+
+apply from: "${rootProject.projectDir}/gradle/utf8-encoding.gradle"
+apply from: "${rootProject.projectDir}/gradle/include-sources.gradle"
+
+version = '0.1-SNAPSHOT'
+group = 'de.ars.skillsandcerts.model'
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-release" }
+    maven { url "http://m2.neo4j.org" }
+}
+
+dependencies {
+    compile "org.springframework.data:spring-data-neo4j-rest:3.1.1.RELEASE"
+    compile 'javax.validation:validation-api:1.0.0.GA'
+    compile 'org.hibernate:hibernate-validator:4.2.0.Final'
+    testCompile 'junit:junit:4.+'
+    testCompile 'org.mockito:mockito-all:1.9.5'
+}
+
+task cleanInstall {
+    description = 'Cleans the project and installs the artifact into the local Maven repository.'
+}
+cleanInstall.dependsOn clean
+cleanInstall.dependsOn install
+    
+task wrapper(type: Wrapper) {
+       gradleVersion = '2.0'
+}

@@ -1,0 +1,115 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:beans="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+ 
+    <http auto-config="true" access-decision-manager-ref="accessDecisionManager">
+        <intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        
+        <intercept-url pattern="/**/plan" access="ROLE_CERTMANAGER" />
+        <intercept-url pattern="/productgroups/*/edit" access="ROLE_CERTMANAGER" />
+        
+        <intercept-url pattern="/mycertifications/create" access="ROLE_ADS" />
+        <intercept-url pattern="/**/load" access="ROLE_ADMIN" />
+        <intercept-url pattern="/**/update" access="ROLE_ADMIN" />
+        <intercept-url pattern="/**/create" access="ROLE_ADMIN" />
+        <intercept-url pattern="/**/edit" access="ROLE_ADMIN" />
+        <intercept-url pattern="/**/pathedit" access="ROLE_ADMIN" />
+        <intercept-url pattern="/**/edit/**/" access="ROLE_ADMIN" />
+        
+        <intercept-url pattern="/**" access="ROLE_ADS" />
+        <form-login authentication-success-handler-ref="authSuccessHandler"
+            login-page="/login"
+            default-target-url="/certifications"
+            login-processing-url="/login.do"
+            authentication-failure-url="/login?error="
+            username-parameter="username"
+            password-parameter="password" />
+        <logout logout-url="/logout" logout-success-url="/login?logout=" />
+    </http>
+    
+    <authentication-manager>
+      <authentication-provider>
+        <user-service>
+            <user name="angestellter" password="password" authorities="ROLE_ADS" />
+            <user name="admin" password="password" authorities="ROLE_ADMIN" />
+            <user name="zertmanager" password="password" authorities="ROLE_CERTMANAGER" />
+            <user name="oberchef" password="password" authorities="ROLE_ADMIN, ROLE_CERTMANAGER" />
+        </user-service>
+      </authentication-provider>
+    </authentication-manager>  
+    
+    <!-- <authentication-manager>
+        <authentication-provider ref="ldapAuthProvider" />
+    </authentication-manager> -->
+    
+    <beans:bean id="contextSource" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
+        <beans:constructor-arg value="ldap://asterix.ars.de:389/" />
+        <beans:property name="userDn" value="CN=Theo Tester,O=ARS GmbH" />
+        <beans:property name="password" value="PassW8rd" />
+    </beans:bean>
+    
+    <beans:bean id="ldapAuthProvider" class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
+        <beans:constructor-arg>
+            <beans:bean class="org.springframework.security.ldap.authentication.BindAuthenticator">
+                <beans:constructor-arg ref="contextSource" />
+                <!-- <beans:property name="userDnPatterns">
+                    <beans:list>
+                        <beans:value>CN={0},O=ARS GmbH</beans:value>
+                    </beans:list>
+                </beans:property>  -->
+                <beans:property name="userSearch" ref="filterBasedUserSearch" />
+            </beans:bean>
+        </beans:constructor-arg>
+        <beans:constructor-arg ref="arsLdapAuthoritiesPopulator" />
+    </beans:bean>
+    
+    <beans:bean id="filterBasedUserSearch" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
+        <beans:constructor-arg index="0" value="O=ARS GmbH" />
+        <beans:constructor-arg index="1" value="uid={0}" />
+        <beans:constructor-arg ref="contextSource" />
+    </beans:bean>
+    
+    <beans:bean id="defaultAuthoritiesPopulator" class="org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator">
+        <beans:constructor-arg ref="contextSource"/>
+        <beans:constructor-arg value=""/>
+    </beans:bean>
+    
+    <beans:bean id="arsLdapAuthoritiesPopulator" class="de.ars.skilldb.security.ArsLdapAuthoritiesPopulator">
+        <beans:property name="delegatePopulator" ref="defaultAuthoritiesPopulator" />
+    </beans:bean>
+    
+    <beans:bean id="roleHierarchyVoter" class="org.springframework.security.access.vote.RoleHierarchyVoter">
+        <beans:constructor-arg ref="roleHierarchy" />
+    </beans:bean>
+    
+    <beans:bean id="roleHierarchy" class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+        <beans:property name="hierarchy">
+            <beans:value>
+                ROLE_CERTMANAGER > ROLE_ADS
+                ROLE_ADMIN > ROLE_ADS
+            </beans:value>
+        </beans:property>
+    </beans:bean>
+    
+    <beans:bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />
+
+    <beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+        <beans:property name="decisionVoters">
+            <beans:list>
+                <beans:ref bean="roleHierarchyVoter" />
+                <beans:ref bean="authenticatedVoter" />
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+    
+    <beans:bean id="authSuccessHandler" class="de.ars.skilldb.security.AuthenticationSuccessHandlerImpl"/>
+    <beans:bean id="webexpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler">
+        <beans:property name="roleHierarchy" ref="roleHierarchy" />
+    </beans:bean>
+ 
+</beans:beans>

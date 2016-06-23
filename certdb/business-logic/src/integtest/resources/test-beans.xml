@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:neo4j="http://www.springframework.org/schema/data/neo4j"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/data/neo4j
+    http://www.springframework.org/schema/data/neo4j/spring-neo4j.xsd">
+    
+    <neo4j:config base-package="de.ars.skilldb.domain" storeDirectory="build/db/test" />
+    <neo4j:repositories base-package="de.ars.skilldb.repository" />
+    
+    <bean id="certificationInteractor" class="de.ars.skilldb.interactor.impl.CertificationInteractorImpl" />
+    <bean id="brandInteractor" class="de.ars.skilldb.interactor.impl.BrandInteractorImpl" />
+    <bean id="productGroupInteractor" class="de.ars.skilldb.interactor.impl.ProductGroupInteractorImpl" />
+    <bean id="pathInteractor" class="de.ars.skilldb.interactor.impl.PathInteractorImpl" />
+    
+    <bean id="certSlurper" class="de.ars.skilldb.input.CertSlurper">
+        <constructor-arg value="http://www-03.ibm.com/certify/partner/pub/zz/mem_skillsreq_printout.shtml" />
+        <constructor-arg value="reference" />
+    </bean>
+    
+    <bean id="certWebEntryMapper" class="de.ars.skilldb.input.CertWebEntryMapper">
+        <constructor-arg value="MMM dd yyyy" />
+    </bean>
+    
+    <bean id="brandContainer" class="de.ars.skilldb.input.BrandContainer" />
+    <bean id="productGroupContainer" class="de.ars.skilldb.input.ProductGroupContainer" />
+    <bean id="certificationContainer" class="de.ars.skilldb.input.CertificationContainer" />
+
+</beans>

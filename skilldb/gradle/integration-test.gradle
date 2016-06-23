@@ -1,0 +1,42 @@
+configurations {
+    integtest.extendsFrom testCompile
+    integtest.extendsFrom testRuntime
+}
+
+sourceSets {
+    integtest {
+        compileClasspath += main.output + test.output + configurations.integtest
+        runtimeClasspath += main.output + test.output + configurations.integtest
+    }
+}
+
+eclipse {
+    classpath {
+        plusConfigurations += [configurations.integtestCompile]
+    }
+}
+
+dependencies {
+    
+}
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integtest.output.classesDir
+    classpath = sourceSets.integtest.runtimeClasspath
+    reports.html.enabled = false
+}
+
+test {
+    reports.html.enabled = false
+}
+
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/allTests")
+    reportOn project.test, project.integrationTest
+}
+
+testReport.dependsOn check
+build.dependsOn testReport
+
+integrationTest.dependsOn test
+check.dependsOn integrationTest

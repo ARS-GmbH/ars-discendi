@@ -1,0 +1,29 @@
+
+/*
+ * Unterdr�ckt Fehlermeldung von Gradle
+ * siehe: http://stackoverflow.com/questions/22613596/gradle-download-dependency-error
+ */
+configurations.all {
+    resolutionStrategy {
+          force 'xml-apis:xml-apis:1.4.01'
+    }
+}
+
+/*
+ * Verhindert, dass Jenkins aufgrund von veralteten Timestamps die Tests als fehlerhaft
+ * einstuft. Die veralteten Timestamps der Testergebnisse sind jedoch Absicht, da Gradle
+ * den inkrementellen Build beherrscht.
+ */
+task jenkinsTest {
+    inputs.files test.outputs.files
+    doLast{
+        def timestamp = System.currentTimeMillis()
+        tasks.withType(Test) {
+            def resultDirectory = project.testResultsDir
+            if (resultDirectory.exists()) {
+                project.testResultsDir.eachFile { it.lastModified = timestamp }
+            }
+        }
+    }
+}
+build.dependsOn(jenkinsTest)

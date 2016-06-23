@@ -1,0 +1,42 @@
+def libertyServerDropins = 'C:\\liberty-8.5.5.3\\usr\\servers\\server3\\dropins'
+war.baseName = 'skilldb'
+
+task deployWar(type: Copy) {
+    from('build/libs') {
+        include '**/*.war'
+    }
+    into libertyServerDropins
+    includeEmptyDirs = false
+}
+
+task deleteOldWar(type: Delete) {
+    delete "${libertyServerDropins}\\${war.baseName}.war"
+}
+
+deployWar.dependsOn war
+deployWar.dependsOn deleteOldWar
+
+task stopLiberty(type:Exec) {
+      workingDir 'C:\\liberty-8.5.5.3\\bin'
+
+      commandLine 'cmd', '/c', 'server.bat', 'stop', 'server3'
+
+      standardOutput = new ByteArrayOutputStream()
+
+      ext.output = {
+        return standardOutput.toString()
+      }
+}
+
+task startLiberty(type:Exec) {
+      description = 'Starts an instance of the Liberty Profile Application Server.'
+      workingDir 'C:\\liberty-8.5.5.3\\bin'
+
+      commandLine 'cmd', '/c', 'server.bat', 'start', 'server3'
+
+      standardOutput = new ByteArrayOutputStream()
+
+      ext.output = {
+           return standardOutput.toString()
+      }
+}

@@ -1,1 +1,1 @@
-include 'business-logic', 'web-frontend'
+includeFlat 'skills-business-logic', 'skills-web-frontend'
